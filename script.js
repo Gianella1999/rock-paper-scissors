@@ -1,124 +1,93 @@
-// funcion getComputerChoice -> Eligue aleatoriamente(piedra, papel o tijera)
 function getComputerChoice(){
-
     let valor = Math.random();
-
-    let choise = (valor <= 0.3)? "rock": 
+    return (valor <= 0.3)? "rock": 
     (valor <= 0.6) ? "paper": "scissors";
-  
-    return choise;
-
 }
-//---> console.log(getComputerChoise());
 
-// funcion getHumanChoice -> toma la eleccion del usuario 
-function getHumanChoice(){
+let eleccionJugador = document.querySelectorAll("button");
 
-    let eleccion = prompt("Escoge 1: rock, paper, scissors.");
+eleccionJugador.forEach(eleccion => {
 
-    return eleccion;
+    eleccion.addEventListener('click', () => {
+        let choise = eleccion.value;
+        let computer = getComputerChoice()
+        playRound(choise, computer);
+    })
+});
 
-}
-//--> console.log(getHumanChoise());
-
-
-//función que tome las elecciones de los jugadores humanos y de la computadora como argumentos, juegue una sola ronda, incremente el puntaje del ganador de la ronda y registre un anuncio del ganador.
-
-function playRound(human, computer){
-
-    humanLower = human.toLowerCase();
-
-    switch(humanLower){
-
-    case "rock": 
-        if(computer == "scissors"){
-            
-            console.log("¡Ganas! La piedra le gana a la tijera");
-            return humanScore++;
-
-        } else if(computer == "paper"){
-
-            console.log("¡Pierdes! El papel le gana a la piedra");
-            return computerScore++;
-        } else{
-            console.log("empate");
-        }
-        break;
-
-
-    case "scissors":
-
-        if(computer == "paper"){
-            console.log("¡Ganas! La tijera le gana a el papel");
-            return humanScore++;
-
-        } else if(computer == "rock"){
-
-            console.log("¡Pierdes! La piedra le gana a la tijera");
-            return computerScore++;
-        }else{
-            console.log("empate");
-        }
-
-        break;
-
-    case "paper":
-
-        if(computer == "rock"){
-            console.log("¡Ganas! El papel le gana a la piedra");
-        
-            return humanScore++;
-
-        } else if(computer == "scissors"){
-
-            console.log("¡Pierdes! La tijera le gana a el papel");
-            return computerScore++;
-        }else{
-            console.log("empate");
-        }
-        break;
+function getResultMessage(winner) {
+    if (winner === "human") {
+      return "¡Ganas!";
+    } else if (winner === "computer") {
+      return "¡Pierdes!";
+    } else {
+      return "Empate";
     }
-}
-
-// funcion playGame que llame a playRound -> lleve el registro de los puntajes y declare al ganador al final 
-
-function playGame(){
-
-const round = 5;
-
-for(let i=1; i<= round; i++){
-
-       const computerSelection = getComputerChoice();
-       const humanSelection = getHumanChoice();
-       // Para ver por consola la seleccion de cada jugador
-       console.log("Ronda " + i + "->"+ "Yo: " + humanSelection +  " " + "Computer: " + computerSelection )
-
-        playRound(humanSelection, computerSelection);
-            
-    }
-
-    console.log("nuestro puntaje total es: "+ humanScore);
-    console.log("puntaje total de tu oponente: " + computerScore);
-
-    let ganador = (computerScore < humanScore)? "Hemos Ganado!":
-    (computerScore > humanScore)? "El ganador el computer jejjee!":
-    "Puntaje empatado";
-
-    console.log(ganador);
-}
+  }
 
 // declaracion de variables globales de los jugadores(human y computer)
-    let humanScore = 0;
-    let computerScore = 0;
+let humanScore = 0;
+let computerScore = 0;
 
-// Llamada a la funcion para jugar todo el juego
-playGame();
+function playRound(playerChoice, computerChoice){
 
-/*comentarios de la resolucion del ejercicio
+  let result = document.querySelector("#result");
+  let winner;
+  if (
+    (playerChoice === "rock" && computerChoice === "scissors") ||
+    (playerChoice === "scissors" && computerChoice === "paper") ||
+    (playerChoice === "paper" && computerChoice === "rock")
+  ) {
+    winner = "human";
+    humanScore++;
+  } else if (
+    (playerChoice === "scissors" && computerChoice === "rock") ||
+    (playerChoice === "paper" && computerChoice === "scissors") ||
+    (playerChoice === "rock" && computerChoice === "paper")
+  ) {
+    winner = "computer";
+    computerScore++;
+  } else {
+    winner = "empate";
+  }
 
-    Me gustaria mejorar la implementacion de las rondas, que me solicite 
-    la eleccion del jugador y hasta que no se haya ejecutado la 1 ronda n
-    o vuelva a pedir mi eleccion.
+  const message = getResultMessage(winner) + ` ${playerChoice} vs ${computerChoice}`;
+  const p = document.createElement("p");
+  p.textContent = message;
+  result.appendChild(p);
 
-*/
+  // Verificar si algún jugador ha ganado
+  if (humanScore === 5 || computerScore === 5) {
+    ganador(humanScore, computerScore, result);
+  }
 
+}
+
+function ganador(human, computer, result){
+    let puntaje = document.createElement("p")
+    puntaje.innerHTML = "Puntaje human: "+ human + " " +"Puntaje Computer: " + computer;
+    result.appendChild(puntaje);
+
+    let ganador = (computer < human)? "Hemos Ganado!":
+    (computer > human)? "El ganador el computer jejjee!":
+    "Puntaje empatado";
+    let gana = document.createElement("p")
+    gana.innerHTML = ganador;
+    result.appendChild(gana);
+
+}
+
+let playAgain = document.getElementById("playAgain");
+playAgain.addEventListener('click', reset);
+
+function reset(){
+    // Eliminar resultados
+    let resultados = document.querySelectorAll("p");
+    resultados.forEach(p => {
+        p.remove();
+    })
+    // reset de puntaje 
+    humanScore = 0;
+    computerScore = 0;
+
+}
